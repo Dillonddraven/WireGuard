@@ -1,0 +1,155 @@
+## 1. Overview
+This project demonstrates the deployment of a fully functional WireGuard VPN server on a DigitalOcean Droplet using Docker and Docker Compose.
+The goal is to:
+
+Create a DigitalOcean Droplet
+
+Install Docker
+
+Deploy WireGuard inside Docker
+
+Connect both a PC and personal iphone to the VPN
+
+Prove connectivity by showing before/after public IP screenshots
+
+Publish documentation using GitHub Pages
+
+## 2. DigitalOcean Setup
+2.1 Create DigitalOcean Account
+
+Created a new DigitalOcean account using the 60-day credit.
+
+Verified identity and added billing (card not charged).
+
+2.2 Create Droplet
+
+Droplet settings used:
+
+Setting	Value
+Image	Ubuntu 22.04
+Plan	Basic, $6/month
+CPU Option	Regular
+Region	(Your chosen region)
+Authentication	Password login
+Hostname	wireguard-server
+
+2.3 Droplet Public IP
+138.197.221.120
+SCREEN SHOT HERE of droplet creation 
+
+
+## 3. SSH Into Droplet
+From Mac Terminal: ssh root@138.197.221.120
+
+## 4. Install Docker & Docker Compose
+```
+apt update && apt install -y docker.io docker-compose
+systemctl enable docker
+systemctl start docker
+```
+(If Ubuntu prompted to restart daemons, selected "yes")
+
+## 5. Create WireGuard Directory
+
+```
+mkdir wireguard
+cd wireguard
+```
+## 6. Create docker-compose.yml
+Create yml file 
+```nano docker-compose.yml```
+
+yml contents: 
+```
+version: "3.8"
+
+services:
+  wireguard:
+    image: linuxserver/wireguard
+    container_name: wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      - SERVERURL=138.197.221.120
+      - SERVERPORT=51820
+      - PEERS=2
+      - PEERDNS=1.1.1.1
+      - INTERNAL_SUBNET=10.13.13.0
+    volumes:
+      - ./config:/config
+      - /lib/modules:/lib/modules
+    ports:
+      - 51820:51820/udp
+    restart: always
+```
+## 7. Deploy WireGuard Container
+Spin up the container
+```
+docker-compose up -d
+```
+Verify container is running
+```
+docker ps
+```
+Exspected Output:
+```
+CONTAINER ID   IMAGE                   COMMAND   CREATED         STATUS         PORTS                                             NAMES
+fe3264d77170   linuxserver/wireguard   "/init"   9 seconds ago   Up 8 seconds   0.0.0.0:51820->51820/udp, [::]:51820->51820/udp   wireguard
+```
+SCREENSHOT HERE
+
+## 8. Retrieve WireGuard Peer Configs
+WireGuard generates peers automatically inside:
+```
+/root/wireguard/config/peer1
+/root/wireguard/config/peer2
+```
+Generate Phone QR Code:
+```
+docker exec -it wireguard /app/show-peer 1
+```
+In the wireguard app proceed with the follwing:
+```
+docker exec -it wireguard /app/show-peer 1
+```
+## 9. Download PC Config (peer2.conf)
+
+Run on Mac terminal (not inside SSH):
+```
+scp root@138.197.221.120:/root/wireguard/config/peer2/peer2.conf ~/Desktop/
+```
+Exspected Output:
+```
+peer2.conf                                    100%  311     2.4KB/s   00:00
+```
+## 10. Connectivity Proof
+Before:
+Screen shots of tunnels 
+
+
+
+After:
+Droplet IP: 138.197.221.120
+
+## 11. Destroying The Droplet
+
+Navigate to Wireguard and proceed with the following:
+Droplet → Destroy → Confirm Delete
+
+## 12. Conclusion
+
+This project successfully deployed:
+
+A Docker-based WireGuard VPN server
+
+Two WireGuard clients (phone + PC)
+
+Secure VPN tunneling with full IP address verification
+
+Documentation hosted on GitHub Pages
+
+The VPN correctly routed both client devices through the server, as shown by matching the Droplet's public IP before and after testing
