@@ -15,25 +15,26 @@ Prove connectivity by showing before/after public IP screenshots
 Publish documentation using GitHub Pages
 
 ## 2. DigitalOcean Setup
-2.1 Create DigitalOcean Account
+### 2.1 Create DigitalOcean Account
 
 Created a new DigitalOcean account using the 60-day credit.
 
 Verified identity and added billing (card not charged).
 
-2.2 Create Droplet
+### 2.2 Create Droplet
 
 Droplet settings used:
 
-Setting	Value
-Image	Ubuntu 22.04
-Plan	Basic, $6/month
-CPU Option	Regular
-Region	(Your chosen region)
-Authentication	Password login
-Hostname	wireguard-server
+| Setting       | Value             |
+|--------------|-------------------|
+| Image        | Ubuntu 22.04      |
+| Plan         | Basic, $6/month   |
+| CPU Option   | Regular           |
+| Region       | (chosen region)   |
+| Authentication | Password login  |
+| Hostname     | `wireguard-server` |
 
-2.3 Droplet Public IP
+### 2.3 Droplet Public IP
 138.197.221.120
 SCREEN SHOT HERE of droplet creation 
 
@@ -58,6 +59,7 @@ cd wireguard
 ## 6. Create docker-compose.yml
 Create yml file 
 ```nano docker-compose.yml```
+![yml file](Wireguard_yml.png)
 
 yml contents: 
 ```
@@ -100,7 +102,8 @@ Exspected Output:
 CONTAINER ID   IMAGE                   COMMAND   CREATED         STATUS         PORTS                                             NAMES
 fe3264d77170   linuxserver/wireguard   "/init"   9 seconds ago   Up 8 seconds   0.0.0.0:51820->51820/udp, [::]:51820->51820/udp   wireguard
 ```
-SCREENSHOT HERE
+![Docker Ps](Dockerps.png)
+
 
 ## 8. Retrieve WireGuard Peer Configs
 WireGuard generates peers automatically inside:
@@ -112,6 +115,8 @@ Generate Phone QR Code:
 ```
 docker exec -it wireguard /app/show-peer 1
 ```
+![QR Code](QRCode.jpeg)
+
 In the wireguard app proceed with the follwing:
 ```
 docker exec -it wireguard /app/show-peer 1
@@ -129,10 +134,20 @@ peer2.conf                                    100%  311     2.4KB/s   00:00
 ## 10. Connectivity Proof
 Before:
 Screen shots of tunnels 
+Iphone:
+![Phone Before](IphoneBefore.png)
 
+Labtop:
+![Phone Before](LabtopBefore.png)
 
 
 After:
+Iphone:
+![Phone After](IphoneAfter.png)
+
+Labtop:
+![Labtop After](LabtopAfter.png)
+
 Droplet IP: 138.197.221.120
 
 ## 11. Destroying The Droplet
